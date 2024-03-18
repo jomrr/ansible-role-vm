@@ -1,0 +1,73 @@
+---
+# role: jam82.vm
+# file: defaults/main.yml
+
+# path where virt-install scripts are created and xml definitions are dumped
+vm_build_path: "/tmp"
+
+vm_definitions:
+    # autostart guest on boot
+  - autostart: false
+    # secure boot on fedora
+    boot:
+      - loader=/usr/share/OVMF/OVMF_CODE.secboot.fd
+      - loader.readonly=yes
+      - loader.type=pflash
+      - nvram.template=/usr/share/OVMF/OVMF_VARS.secboot.fd
+      - loader_secure=yes
+      - secure=yes
+    # default to local qemu system connection
+    connection: "qemu:///system"
+    # console settings
+    console: pty,target_type=serial
+    # cpu model, e.g. host
+    cpu: 'host'
+    # which physical cpus the guest can use as comma separated list of numbers
+    cpuset: ''
+    # disks of the VM as list, direct params of `virt-install --disk`
+    disks:
+      - "path=/tmp/test-vm.qcow2,format=qcow2,size=32,target.bus=virtio"
+    # virt-install --extra-args "...", inst.ks file has to exist or virt-install fails.
+    extra_args:
+      # - "inst.ks=file:/test-vm.cfg"
+      - console=tty0
+      - console=ttyS0,115200
+      - ipv6.disable=1
+    # system management mode needed for secure boot
+    features:
+      - smm.state=on
+    # graphics cards of the guest
+    graphics:
+      - spice
+    # inject kickstart or preseed file
+    initrd_inject:  # /tmp/test.cfg
+    # install the vm, when false only creates the virt-install script
+    install: false
+    # install location, cann install directly from mirror
+    location: https://ftp.fau.de/almalinux/9/BaseOS/x86_64/os
+    # guest memory
+    memory: 4096
+    # name of the guest in libvirt
+    name: "test-vm"
+    # guests networks
+    networks:
+      - "network=default,model=virtio"
+    # generate a reproducible mac address for the guest based on fqdn and nic index
+    nic_reproducible_mac: true
+    # with noautoconsole virt-install terminates after spinning up the install
+    # and leaves the guest shutdown after intsallation
+    noautoconsole: true
+    # os-variant, run `osinfo-query os` to get a list of supported OSs
+    os_variant: almalinux9
+    # only print xml and exit
+    print_xml: false
+    # reinstall guest
+    reinstall: false
+    # sound card to attach to the guest
+    sound: none
+    # state of the vm after installation, values from community.libvirt.virt
+    state: running
+    # number of vcpus
+    vcpus: 4
+    # virtualization type used for the guest: kvm, qemu, xen, etc...
+    virt_type: kvm

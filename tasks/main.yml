@@ -1,0 +1,6 @@
+---
+# role: jam82.vm
+# file: tasks/main.yml
+
+- name: "VM | Create VMs"
+  community.libvirt.virt:

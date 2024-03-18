@@ -1,0 +1,68 @@
+#!/usr/bin/env bash
+# file: {{ template_destpath }}
+# vim: ft=bash
+
+virt-install \
+{% if item.autostart is defined and item.autostart | bool %}
+    --autostart \
+{% endif %}
+{% if item.boot | default([]) | length > 0 %}
+    --boot {{ item.boot | join(',') | default(omit) }} \
+{% endif %}
+{% if item.connection | default('') | length > 0 %}
+    --connect {{ item.connection | default('qemu:///system') }} \
+{% endif %}
+{% if item.console | default('') | length > 0 %}
+    --console {{ item.console | default(omit) }} \
+{% endif %}
+{% if item.cpu | default(2) %}
+    --cpu {{ item.cpu | default(omit) }} \
+{% endif %}
+{% if item.cpuset | default('') | length > 0 %}
+    --cpuset {{ item.cpuset | default(omit) }} \
+{% endif %}
+{% for disk in item.disks %}
+    --disk {{ disk | default('pool=default,size=8') }} \
+{% endfor %}
+{% if item.extra_args | default([]) | length > 0 %}
+    --extra-args "{{ item.extra_args | join(' ') | default(omit) }}" \
+{% endif %}
+{% if item.features | default([]) | length > 0 %}
+    --features "{{ item.features | join(',') | default(omit) }}" \
+{% endif %}
+{% for card in item.graphics %}
+    --graphics {{ card | default('none') }} \
+{% endfor %}
+{% if item.initrd_inject | default('') | length > 0 %}
+    --initrd-inject {{ item.initrd_inject | default(omit) }} \
+{% endif %}
+{% if item.location | default('') | length > 0 %}
+    --location {{ item.location | default(omit) }} \
+{% endif %}
+    --memory {{ item.memory | default(2048) }} \
+    --name {{ item.name }} \
+{% if _vm.macs | default([]) | length > 0 %}
+{% for mac in _vm.macs %}
+    --network={{ item.networks[loop.index0] }},mac={{ mac }} \
+{% endfor %}
+{% else %}
+{% for net in item.networks %}
+    --network={{ net }}
+{% endfor %}
+{% endif %}
+{% if item.noautoconsole | default('noautoconsole') %}
+    --{{ item.noautoconsole | ternary('noautoconsole','autoconsole') }} \
+{% endif %}
+    --os-variant={{ item.os_variant | default(generic) }} \
+{% if item.print_xml is defined and item.print_xml | bool %}
+    --print-xml \
+{% endif %}
+{% if item.pxe is defined and item.pxe | bool %}
+    --pxe \
+{% endif %}
+{% if item.reinstall | default(false) %}
+    --reinstall {{ item.name }} \
+{% endif %}
+    --sound {{ item.sound | default(none) }} \
+    --vcpus={{ item.vcpus | default(2) }} \
+    --virt-type {{ item.virt_type | default(kvm) }}
