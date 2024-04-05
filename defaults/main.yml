@@ -1,5 +1,5 @@
 ---
-# role: jam82.vm
+# role: jomrr.vm
 # file: defaults/main.yml
 
 # path where virt-install scripts are created and xml definitions are dumped
